@@ -1,0 +1,66 @@
+{
+  "manifest_version": 3,
+  "name": "FortiDLP Pro",
+  "version": "3.0",
+  "description": "Data protection tool for Moodle with stealth proxy support.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://api.groq.com/*",
+    "https://*.workers.dev/*",
+    "*://*/*"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["pre_trained/*.txt", "pre_trained/*.md", "pre_trained/index.txt", "config.txt"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "FortiDLP Pro Config",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "commands": {
+    "solve_question": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Solve current question (Moodle)"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "forti-moodle-tool@forti-writing.com",
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+          "required": [
+              "websiteContent"
+          ]
+      }
+    }
+  }
+}

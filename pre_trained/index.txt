@@ -1,0 +1,7 @@
+# Pre-trained knowledge files list
+# Add one filename per line (files must be in the pre_trained/ folder)
+# Lines starting with # are comments
+
+PI_Testavimas_Ziniu_Baze_FINAL.txt
+PI_Testavimas_Ziniu_Baze_V3.txt
+Reasoning_Guardrails_and_Taxonomy.txt

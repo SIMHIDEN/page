@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dual Testing AI – 5€</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #121a31;
+      --text: #e9eefc;
+      --muted: #9aa8d6;
+      --accent: #7c5cff;
+      --ok: #34d399;
+      --warn: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #1a2450, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .wrap {
+      width: 100%;
+      max-width: 920px;
+      background: linear-gradient(180deg, #1a2344 0%, var(--card) 100%);
+      border: 1px solid #2a376b;
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 20px 55px rgba(0,0,0,.45);
+    }
+    h1 {
+      margin: 0;
+      font-size: 38px;
+      line-height: 1.1;
+    }
+    .bigline {
+      margin: 0 0 16px;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+    .sub {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 760px;
+    }
+    .price {
+      margin: 22px 0;
+      font-size: 46px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .price small {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+    .badge {
+      display: inline-block;
+      margin-left: 10px;
+      background: rgba(52, 211, 153, .18);
+      color: #8ef3ca;
+      border: 1px solid rgba(52, 211, 153, .45);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin: 20px 0 18px;
+    }
+    .item {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .item h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .proof {
+      background: rgba(245, 158, 11, .12);
+      border: 1px solid rgba(245, 158, 11, .35);
+      color: #ffd79a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 12px 0 18px;
+      font-size: 14px;
+    }
+    .cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn {
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      color: #fff;
+      border: 0;
+      border-radius: 11px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    ul { margin: 10px 0 0 18px; }
+    li { margin-bottom: 8px; color: #d7e1ff; }
+  </style>
+</head>
+  <body>
+  <main class="wrap">
+    <p class="bigline">AI ATSAKYMAI I BET KOKIUS KLAUSIMUS SAUGIAI IR NEPRIGAUNAMAI</p>
+    <h1>Dual Testing AI <br />geriausi atsakymai apie testavimą</h1>
+    <p class="sub">
+      Vienas modelis tikrina kitą: GPT + Ollama „dual“ režimas sumažina klaidas,
+      stabdo loop'us ir parenka stabilesnį atsakymą testavimo klausimams.
+    </p>
+
+    <div class="price">
+      5€ <small>vienkartinis pasiūlymas</small>
+      <span class="badge">3x geriau už single model režimą</span>
+    </div>
+
+    <section class="grid">
+      <article class="item">
+        <h3>Dual sprendimo logika</h3>
+        <p>Groq GPT kaip pagrindas + Ollama fallback / arbitration režimas.</p>
+      </article>
+      <article class="item">
+        <h3>Mažiau haliucinacijų</h3>
+        <p>Aiškios taisyklės: static vs dynamic, „all variants“ tik jei visi teisingi.</p>
+      </article>
+      <article class="item">
+        <h3>Testavimo ekspertinis fokusas</h3>
+        <p>Įkelta speciali knowledge bazė apie QA metodus, įrankius ir kriterijus.</p>
+      </article>
+    </section>
+
+    <div class="proof">
+      <strong>Kodėl 3x geriau:</strong> dual režime modeliai vertinami svoriais,
+      neteisingi „all variants“ atsakymai blokuojami, o fallback apsaugo nuo timeout/rate-limit.
+    </div>
+
+    <h2>Kas įeina</h2>
+    <ul>
+      <li>Dual model policy (Groq → Ollama) + optional weighted arbitration</li>
+      <li>Prompt guardrails nuo loop ir overgeneralization</li>
+      <li>Paruoštas konfigūravimas testavimo užduotims</li>
+    </ul>
+
+    <h2>Ką tai daro</h2>
+    <ul>
+      <li>Moodle režimas: Ctrl+Click arba Ctrl+Shift+Y išsprendžia dabartinį klausimą.</li>
+      <li>Mokymas: „Train Knowledge Base“ išmoksta iš atidaryto puslapio turinio.</li>
+      <li>Žinių valdymas: View / Export / Import / Clear / Purge funkcijos.</li>
+    </ul>
+
+    <div class="cta">
+      <a class="btn" href="#">Pirkti už 5€</a>
+      <span class="note">Skirta: testavimo klausimų atsakymams ir mokymosi scenarijams. DM me</span>
+    </div>
+  </main>
+</body>
+</html>

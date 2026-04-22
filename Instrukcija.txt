@@ -1,0 +1,186 @@
+# FortiAI Pro v3.0 - Instrukcija
+
+## 1. Greitas Startas (Quick Start)
+
+### Konfigūracijos Failas (config.txt)
+Prieš įkeliant plėtinį, redaguokite `config.txt` failą:
+
+```
+GROQ_KEY=gsk_jusu_raktas_cia
+PROXY_URL=https://jusu-worker.workers.dev
+DEBUG=false
+```
+
+**Pastaba:** Jei nustatysite API raktus config.txt faile, jie bus automatiškai įkelti ir nereikės jų įvesti popup lange!
+
+---
+
+## 2. API Raktų Gavimas
+
+### Groq API (Moodle režimui)
+1. Eikite į https://console.groq.com/keys
+2. Prisijunkite arba susikurkite paskyrą
+3. Spauskite "Create API Key"
+4. Nukopijuokite raktą (prasideda `gsk_...`)
+5. Įklijuokite į config.txt arba popup langą
+
+---
+
+## 3. Cloudflare Worker Proxy Nustatymas
+
+Proxy serveris slepia API užklausas nuo tinklo stebėjimo.
+
+### Žingsniai:
+1. Eikite į https://dash.cloudflare.com
+2. Susikurkite nemokamą paskyrą (jei neturite)
+3. Kairiajame meniu spauskite "Workers & Pages"
+4. Spauskite "Create application" → "Create Worker"
+5. Ištrinkite visą default kodą
+6. Nukopijuokite visą `cloudflare-worker.js` failo turinį
+7. Įklijuokite į Cloudflare redaktorių
+8. Spauskite "Save and Deploy"
+9. Nukopijuokite worker URL (pvz. `https://mano-worker.workers.dev`)
+10. Įklijuokite URL į config.txt `PROXY_URL=` lauką
+
+### Worker URL formatas:
+```
+https://[jusu-worker-pavadinimas].[jusu-subdomain].workers.dev
+```
+
+---
+
+## 4. Pre-trained Žinių Bazė
+
+### Kaip pridėti savo žinias:
+1. Sukurkite `.txt` arba `.md` failą su savo medžiaga
+2. Įdėkite failą į `pre_trained/` aplanką
+3. Atidarykite `pre_trained/index.txt` failą
+4. Pridėkite savo failo pavadinimą į naują eilutę:
+
+```txt
+IT_Auditas_1.txt
+Jusu_Failas.txt
+```
+
+5. Išsaugokite ir perkraukite plėtinį
+
+### Failo formatas:
+- Naudokite paprastą tekstą arba Markdown
+- Struktūruokite informaciją aiškiai
+- Naudokite klausimus ir atsakymus kur įmanoma
+
+**Pavyzdys:**
+```
+# Tema: Programavimo Pagrindai
+
+Klausimas: Kas yra kintamasis?
+Atsakymas: Kintamasis yra atminties vieta, kurioje saugoma reikšmė.
+
+Klausimas: Kas yra funkcija?
+Atsakymas: Funkcija yra kodo blokas, kuris atlieka specifinę užduotį.
+```
+
+---
+
+## 5. Naudojimas
+
+### Moodle Režimas:
+- **Ctrl+Click** ant klausimo - išsprendžia klausimą
+- **Ctrl+Shift+Y** - išsprendžia dabartinį klausimą
+- Pagal nutylėjimą naudoja `openai/gpt-oss-120b` (Groq), su fallback į Ollama jei įjungta
+
+### Mokymas:
+1. Atidarykite puslapį su mokomąja medžiaga
+2. Spauskite plėtinio ikoną
+3. Spauskite "Train Knowledge Base"
+4. Plėtinys išmoks iš puslapio turinio
+
+---
+
+## 6. Žinių Valdymas
+
+### View Knowledge:
+- Rodo pre-trained ir išmoktas žinias
+- **Export** - eksportuoja žinias į .md failą
+- **Import** - importuoja žinias iš .md failo
+- **Clear Knowledge** - ištrina tik išmoktas žinias (pre-trained lieka)
+- **Purge All Data** - ištrina VISKĄ (API raktus, žinias, nustatymus)
+
+---
+
+## 7. Troubleshooting
+
+### Klaida: "Receiving end does not exist"
+- Uždarykite skirtuką ir atidarykite naują
+- Perkraukite plėtinį `about:debugging`
+
+### Klaida: "API key not set"
+- Patikrinkite ar įvedėte API raktą popup lange arba config.txt
+
+### Klaida: "CORS blocked"
+- Naudokite Cloudflare Worker proxy
+- Patikrinkite ar PROXY_URL teisingas config.txt faile
+
+### Plėtinys neveikia:
+1. Atidarykite `about:debugging` → "This Firefox"
+2. Raskite FortiAI Pro → "Inspect"
+3. Patikrinkite Console žinutes klaidoms
+
+---
+
+## 8. Config.txt Pilnas Pavyzdys
+
+```
+# FortiAI Pro Configuration
+
+# Groq API (Moodle režimui)
+GROQ_KEY=gsk_abc123xyz789
+
+# Modelių maršrutizavimas
+PRIMARY_MODEL=openai/gpt-oss-120b
+FALLBACK_MODEL=llama-3.1-8b-instant
+MODEL_PROVIDER_ORDER=groq,ollama
+ENABLE_FALLBACK=true
+ENABLE_ARBITRATION=false
+
+# Ollama (lokalus modelis fallback režimui)
+OLLAMA_URL=http://localhost:11434/api/chat
+OLLAMA_MODEL=llama3.1:8b
+
+# Proxy serveris
+PROXY_URL=https://mano-proxy.workers.dev
+
+# Debug režimas: true arba false
+DEBUG=false
+```
+
+---
+
+## 9. Saugumas
+
+- Niekada nesidalinkite API raktais
+- Proxy serveris slepia jūsų užklausas
+- Jitter delay apsaugo nuo aptikimo (0.1-1 sek. tarpai)
+- Extension ID keičiasi kiekvieno įkėlimo metu
+
+---
+
+## 10. Diegimas Firefox
+
+1. Išskleiskite archyvą
+2. Redaguokite `config.txt` su savo API raktais
+3. Eikite į `about:debugging`
+4. Spauskite "This Firefox"
+5. Spauskite "Load Temporary Add-on"
+6. Pasirinkite `manifest.json` failą
+
+### Firefox Nustatymai (jei reikia):
+1. Adreso juostoje: `about:config`
+2. Sutikite su įspėjimu
+3. Ieškokite: `browser.link.open_newwindow.restriction`
+4. Pakeiskite reikšmę į `0`
+
+---
+
+**Versija:** 3.0  
+**Palaikomi naršyklės:** Firefox 109+
