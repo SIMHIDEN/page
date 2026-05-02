@@ -119,7 +119,7 @@ function App() {
   const panelClass =
     'rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_2px_8px_rgba(123,91,66,0.08)]'
   const primaryButtonClass =
-    'w-full rounded-xl bg-[var(--color-primary)] px-5 py-3.5 text-sm font-semibold text-[var(--color-surface)] transition duration-200 hover:brightness-95 disabled:cursor-not-allowed disabled:bg-[var(--color-accent)] disabled:text-[var(--color-muted)]'
+    'w-full rounded-xl bg-[var(--color-primary)] px-5 py-3.5 text-sm font-semibold text-[var(--color-text-on-primary)] transition duration-200 hover:brightness-95 disabled:cursor-not-allowed disabled:bg-[var(--color-accent)] disabled:text-[var(--color-muted)]'
   const inputClass =
     'w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition duration-200 placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15'
 
@@ -176,13 +176,13 @@ function App() {
                       className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3"
                     >
                       <span className="font-medium">{player}</span>
-                      <button
-                        type="button"
-                        onClick={() => removePlayer(index)}
-                        className="text-sm font-semibold text-[#9f4d49] transition duration-200 hover:brightness-90"
-                      >
-                        Šalinti
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => removePlayer(index)}
+                          className="text-sm font-semibold text-[var(--color-danger)] transition duration-200 hover:brightness-90"
+                        >
+                          Šalinti
+                        </button>
                     </div>
                   ))
                 )}
@@ -299,7 +299,7 @@ function App() {
                   }}
                   className={`mt-5 w-full rounded-xl border border-[var(--color-primary)] px-6 py-4 text-lg font-semibold transition duration-200 ${
                     isHoldingReveal
-                      ? 'bg-[var(--color-primary)] text-[var(--color-surface)]'
+                      ? 'bg-[var(--color-primary)] text-[var(--color-text-on-primary)]'
                       : 'bg-[var(--color-surface)] text-[var(--color-primary)] hover:bg-[var(--color-accent)]/35'
                   }`}
                 >
@@ -308,8 +308,8 @@ function App() {
               </>
             ) : isImpostor ? (
               <>
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#9f4d49]">IMPOSTOR</p>
-                <p className="mt-2 text-4xl font-bold text-[#9f4d49] sm:text-5xl">IMPOSTORIUS</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-danger)]">IMPOSTOR</p>
+                <p className="mt-2 text-4xl font-bold text-[var(--color-danger)] sm:text-5xl">IMPOSTORIUS</p>
                 <p className="mt-3 text-sm text-[var(--color-muted)]">Tu be žodžio. Išsisuk gudriai.</p>
               </>
             ) : (
