@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { wordCategories, type WordCategoryKey } from './words'
+import { useState } from 'react'
+import { wordCategories } from './words'
 
 type GamePhase = 'setup' | 'reveal' | 'done'
 
@@ -21,17 +21,15 @@ function App() {
   const [playerInput, setPlayerInput] = useState('')
   const [players, setPlayers] = useState<string[]>([])
   const [impostorCount, setImpostorCount] = useState(1)
-  const [categoryKey, setCategoryKey] = useState<WordCategoryKey>('lithuanian')
   const [selectedWord, setSelectedWord] = useState('')
   const [impostorIndices, setImpostorIndices] = useState<number[]>([])
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [showMasterWord, setShowMasterWord] = useState(false)
+  const [discussionStarter, setDiscussionStarter] = useState('')
 
   const canStart = players.length >= 3 && impostorCount >= 1 && impostorCount < players.length
   const currentPlayer = players[currentPlayerIndex]
-
-  const categoryEntries = useMemo(() => Object.entries(wordCategories), [])
 
   const addPlayer = () => {
     const name = playerInput.trim()
@@ -46,7 +44,7 @@ function App() {
 
   const startGame = () => {
     if (!canStart) return
-    const words = wordCategories[categoryKey].words
+    const words = wordCategories.lithuanian.words
     const nextWord = pickRandomWord(words)
     const nextImpostors = pickRandomImpostorIndices(players.length, impostorCount)
     setSelectedWord(nextWord)
@@ -54,11 +52,13 @@ function App() {
     setCurrentPlayerIndex(0)
     setRevealed(false)
     setShowMasterWord(false)
+    setDiscussionStarter('')
     setPhase('reveal')
   }
 
   const nextPlayer = () => {
     if (currentPlayerIndex === players.length - 1) {
+      setDiscussionStarter(players[Math.floor(Math.random() * players.length)] ?? '')
       setPhase('done')
       return
     }
@@ -73,6 +73,7 @@ function App() {
     setCurrentPlayerIndex(0)
     setRevealed(false)
     setShowMasterWord(false)
+    setDiscussionStarter('')
   }
 
   const isImpostor = impostorIndices.includes(currentPlayerIndex)
@@ -83,7 +84,7 @@ function App() {
         <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl sm:p-8">
           <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Imposter Party LT</h1>
           <p className="mt-2 text-sm text-slate-300 sm:text-base">
-            Nu ka, surasyk chebra, issirink kategorija ir varom i raunda.
+            Nu ka, surasyk chebra ir varom i raunda. UI padarytas patogiai telefonui.
           </p>
 
           <section className="mt-6 space-y-3">
@@ -141,21 +142,6 @@ function App() {
 
           <section className="mt-6 grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
-              <span className="block text-sm font-semibold text-slate-200">Kategorija</span>
-              <select
-                value={categoryKey}
-                onChange={(event) => setCategoryKey(event.target.value as WordCategoryKey)}
-                className="w-full rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400"
-              >
-                {categoryEntries.map(([key, category]) => (
-                  <option key={key} value={key}>
-                    {category.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="space-y-2">
               <span className="block text-sm font-semibold text-slate-200">Impostoriu kiekis</span>
               <input
                 type="number"
@@ -166,6 +152,12 @@ function App() {
                 className="w-full rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400"
               />
             </label>
+            <div className="space-y-2">
+              <span className="block text-sm font-semibold text-slate-200">Aktyvi zodziu baze</span>
+              <p className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-200">
+                {wordCategories.lithuanian.label}: {wordCategories.lithuanian.words.length} zodziai
+              </p>
+            </div>
           </section>
 
           <button
@@ -195,6 +187,9 @@ function App() {
           <h1 className="mt-2 text-3xl font-black sm:text-4xl">Diskusija laikas 👀</h1>
           <p className="mt-3 text-slate-300">
             Dabar visi aptarineja ir bando ismusti impostoriu is vieso.
+          </p>
+          <p className="mt-4 rounded-xl border border-emerald-400/35 bg-emerald-400/10 px-4 py-3 text-lg font-black text-emerald-200">
+            Pirmas kalba: {discussionStarter || 'Atsitiktinis zaidejas'}
           </p>
           <button
             type="button"
