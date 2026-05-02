@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { wordCategories } from './words'
 
 type GamePhase = 'setup' | 'reveal' | 'done'
+const HOLD_TO_REVEAL_MS = 550
 
 function pickRandomWord(words: string[]): string {
   return words[Math.floor(Math.random() * words.length)]
@@ -26,10 +27,25 @@ function App() {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [showMasterWord, setShowMasterWord] = useState(false)
+  const [isHoldingReveal, setIsHoldingReveal] = useState(false)
   const [discussionStarter, setDiscussionStarter] = useState('')
+  const holdTimerRef = useRef<number | null>(null)
 
   const canStart = players.length >= 3 && impostorCount >= 1 && impostorCount < players.length
   const currentPlayer = players[currentPlayerIndex]
+
+  const clearHoldTimer = () => {
+    if (holdTimerRef.current !== null) {
+      window.clearTimeout(holdTimerRef.current)
+      holdTimerRef.current = null
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      clearHoldTimer()
+    }
+  }, [])
 
   const addPlayer = () => {
     const name = playerInput.trim()
@@ -52,7 +68,9 @@ function App() {
     setCurrentPlayerIndex(0)
     setRevealed(false)
     setShowMasterWord(false)
+    setIsHoldingReveal(false)
     setDiscussionStarter('')
+    clearHoldTimer()
     setPhase('reveal')
   }
 
@@ -64,6 +82,8 @@ function App() {
     }
     setCurrentPlayerIndex((prev) => prev + 1)
     setRevealed(false)
+    setIsHoldingReveal(false)
+    clearHoldTimer()
   }
 
   const resetGame = () => {
@@ -73,107 +93,132 @@ function App() {
     setCurrentPlayerIndex(0)
     setRevealed(false)
     setShowMasterWord(false)
+    setIsHoldingReveal(false)
     setDiscussionStarter('')
+    clearHoldTimer()
+  }
+
+  const startRevealHold = () => {
+    if (revealed) return
+    clearHoldTimer()
+    setIsHoldingReveal(true)
+    holdTimerRef.current = window.setTimeout(() => {
+      setRevealed(true)
+      setIsHoldingReveal(false)
+      holdTimerRef.current = null
+    }, HOLD_TO_REVEAL_MS)
+  }
+
+  const cancelRevealHold = () => {
+    if (revealed) return
+    clearHoldTimer()
+    setIsHoldingReveal(false)
   }
 
   const isImpostor = impostorIndices.includes(currentPlayerIndex)
+  const panelClass =
+    'rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_2px_8px_rgba(123,91,66,0.08)]'
+  const primaryButtonClass =
+    'w-full rounded-xl bg-[var(--color-primary)] px-5 py-3.5 text-sm font-semibold text-[var(--color-surface)] transition duration-200 hover:brightness-95 disabled:cursor-not-allowed disabled:bg-[var(--color-accent)] disabled:text-[var(--color-muted)]'
+  const inputClass =
+    'w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition duration-200 placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15'
 
   if (phase === 'setup') {
     return (
-      <main className="mx-auto min-h-screen w-full max-w-3xl bg-slate-950 px-4 py-6 text-slate-100 sm:px-6 sm:py-10">
-        <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl sm:p-8">
-          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Imposter Party LT</h1>
-          <p className="mt-2 text-sm text-slate-300 sm:text-base">
-            Nu ka, surasyk chebra ir varom i raunda. UI padarytas patogiai telefonui.
-          </p>
-
-          <section className="mt-6 space-y-3">
-            <label htmlFor="playerName" className="block text-sm font-semibold text-slate-200">
-              Prideti zaideja
-            </label>
-            <div className="flex gap-2">
-              <input
-                id="playerName"
-                type="text"
-                placeholder="Pvz. Mantas"
-                value={playerInput}
-                onChange={(event) => setPlayerInput(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') addPlayer()
-                }}
-                className="w-full rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 text-base text-slate-100 outline-none transition focus:border-cyan-400"
-              />
-              <button
-                type="button"
-                onClick={addPlayer}
-                className="rounded-xl bg-cyan-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-400"
-              >
-                Prideti
-              </button>
-            </div>
-          </section>
-
-          <section className="mt-5">
-            <h2 className="text-sm font-semibold text-slate-200">Zaidejai ({players.length})</h2>
-            <div className="mt-2 space-y-2">
-              {players.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-slate-600 px-4 py-3 text-sm text-slate-400">
-                  Kol kas tuscia, primesk bent 3 zaidejus.
-                </p>
-              ) : (
-                players.map((player, index) => (
-                  <div
-                    key={`${player}-${index}`}
-                    className="flex items-center justify-between rounded-xl border border-slate-700 bg-slate-800 px-4 py-3"
-                  >
-                    <span className="font-medium">{player}</span>
-                    <button
-                      type="button"
-                      onClick={() => removePlayer(index)}
-                      className="text-sm font-semibold text-rose-300 transition hover:text-rose-200"
-                    >
-                      Trinti
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </section>
-
-          <section className="mt-6 grid gap-4 sm:grid-cols-2">
-            <label className="space-y-2">
-              <span className="block text-sm font-semibold text-slate-200">Impostoriu kiekis</span>
-              <input
-                type="number"
-                min={1}
-                max={Math.max(1, players.length - 1)}
-                value={impostorCount}
-                onChange={(event) => setImpostorCount(Number(event.target.value))}
-                className="w-full rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400"
-              />
-            </label>
-            <div className="space-y-2">
-              <span className="block text-sm font-semibold text-slate-200">Aktyvi zodziu baze</span>
-              <p className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-200">
-                {wordCategories.lithuanian.label}: {wordCategories.lithuanian.words.length} zodziai
-              </p>
-            </div>
-          </section>
-
-          <button
-            type="button"
-            disabled={!canStart}
-            onClick={startGame}
-            className="mt-7 w-full rounded-xl bg-fuchsia-500 px-6 py-4 text-lg font-black text-white transition hover:bg-fuchsia-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
-          >
-            Startuoti zaidima
-          </button>
-
-          {!canStart && (
-            <p className="mt-2 text-center text-sm text-amber-300">
-              Reikia bent 3 zaideju, o impostoriu turi buti maziau nei zaideju.
+      <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+        <div className="mx-auto w-full max-w-md px-4 py-5 sm:max-w-lg sm:py-8">
+          <div className={`${panelClass} p-5 sm:p-6`}>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
+              Imposter Party LT
             </p>
-          )}
+            <h1 className="mt-2 text-3xl font-bold leading-tight">Paruošk raundą</h1>
+            <p className="mt-2 text-sm text-[var(--color-muted)] sm:text-base">
+              Minimalus phone-first ekranas: įvesk žaidėjus, pasirink impostorių kiekį ir pradėk.
+            </p>
+
+            <section className="mt-6 space-y-3">
+              <label htmlFor="playerName" className="block text-sm font-semibold">
+                Pridėti žaidėją
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="playerName"
+                  type="text"
+                  placeholder="Pvz. Mantas"
+                  value={playerInput}
+                  onChange={(event) => setPlayerInput(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') addPlayer()
+                  }}
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={addPlayer}
+                  className="rounded-xl border-2 border-[var(--color-primary)] bg-transparent px-4 py-3 text-sm font-semibold text-[var(--color-primary)] transition duration-200 hover:bg-[var(--color-accent)]/45"
+                >
+                  Pridėti
+                </button>
+              </div>
+            </section>
+
+            <section className="mt-5">
+              <h2 className="text-sm font-semibold">Žaidėjai ({players.length})</h2>
+              <div className="mt-2 space-y-2">
+                {players.length === 0 ? (
+                  <p className="rounded-xl border border-dashed border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-muted)]">
+                    Kol kas tuščia — reikia bent 3 žaidėjų.
+                  </p>
+                ) : (
+                  players.map((player, index) => (
+                    <div
+                      key={`${player}-${index}`}
+                      className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3"
+                    >
+                      <span className="font-medium">{player}</span>
+                      <button
+                        type="button"
+                        onClick={() => removePlayer(index)}
+                        className="text-sm font-semibold text-[#9f4d49] transition duration-200 hover:brightness-90"
+                      >
+                        Šalinti
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
+
+            <section className="mt-6 grid gap-4 sm:grid-cols-2">
+              <label className="space-y-2">
+                <span className="block text-sm font-semibold">Impostorių kiekis</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={Math.max(1, players.length - 1)}
+                  value={impostorCount}
+                  onChange={(event) => setImpostorCount(Number(event.target.value))}
+                  className={inputClass}
+                />
+              </label>
+              <div className="space-y-2">
+                <span className="block text-sm font-semibold">Aktyvi žodžių bazė</span>
+                <p className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-sm">
+                  {wordCategories.lithuanian.label}: {wordCategories.lithuanian.words.length} žodžiai
+                </p>
+              </div>
+            </section>
+
+            <button type="button" disabled={!canStart} onClick={startGame} className={`mt-7 ${primaryButtonClass}`}>
+              Startuoti žaidimą
+            </button>
+
+            {!canStart && (
+              <p className="mt-2 text-center text-sm text-[var(--color-muted)]">
+                Reikia bent 3 žaidėjų, o impostorių turi būti mažiau nei žaidėjų.
+              </p>
+            )}
+          </div>
         </div>
       </main>
     )
@@ -181,90 +226,109 @@ function App() {
 
   if (phase === 'done') {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-3xl items-center px-4 py-8 sm:px-6">
-        <div className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-6 text-center text-slate-100 shadow-2xl sm:p-10">
-          <p className="text-sm font-semibold text-cyan-300">Raundas baigtas</p>
-          <h1 className="mt-2 text-3xl font-black sm:text-4xl">Diskusija laikas 👀</h1>
-          <p className="mt-3 text-slate-300">
-            Dabar visi aptarineja ir bando ismusti impostoriu is vieso.
-          </p>
-          <p className="mt-4 rounded-xl border border-emerald-400/35 bg-emerald-400/10 px-4 py-3 text-lg font-black text-emerald-200">
-            Pirmas kalba: {discussionStarter || 'Atsitiktinis zaidejas'}
-          </p>
-          <button
-            type="button"
-            onClick={resetGame}
-            className="mt-6 w-full rounded-xl bg-cyan-500 px-6 py-4 text-lg font-black text-slate-950 transition hover:bg-cyan-400"
-          >
-            Naujas raundas
-          </button>
+      <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+        <div className="mx-auto flex w-full max-w-md items-center px-4 py-8 sm:max-w-lg">
+          <div className={`${panelClass} w-full p-5 text-center sm:p-7`}>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
+              Raundas baigtas
+            </p>
+            <h1 className="mt-2 text-3xl font-bold leading-tight">Diskusijos metas</h1>
+            <p className="mt-3 text-sm text-[var(--color-muted)] sm:text-base">
+              Dabar aptarkite užuominas ir bandykite atspėti impostorių.
+            </p>
+            <p className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-base font-semibold sm:text-lg">
+              Pirmas kalba: <span className="text-[var(--color-primary)]">{discussionStarter || 'Atsitiktinis žaidėjas'}</span>
+            </p>
+            <button type="button" onClick={resetGame} className={`mt-6 ${primaryButtonClass}`}>
+              Naujas raundas
+            </button>
+          </div>
         </div>
       </main>
     )
   }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-3xl bg-slate-950 px-4 py-6 text-slate-100 sm:px-6 sm:py-10">
-      <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-bold text-cyan-300">
-            Zaidejas {currentPlayerIndex + 1} is {players.length}
-          </p>
-          <button
-            type="button"
-            onClick={() => setShowMasterWord((prev) => !prev)}
-            className="rounded-lg border border-slate-600 px-3 py-2 text-xs font-bold text-slate-200 transition hover:border-cyan-400 hover:text-cyan-300"
-          >
-            {showMasterWord ? 'Paslepti vedejui' : 'Rodyti zodi vedejui'}
-          </button>
-        </div>
+    <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+      <div className="mx-auto w-full max-w-md px-4 py-5 sm:max-w-lg sm:py-8">
+        <div className={`${panelClass} p-5 sm:p-6`}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-muted)]">
+              Žaidėjas {currentPlayerIndex + 1} iš {players.length}
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowMasterWord((prev) => !prev)}
+              className="rounded-lg border-2 border-[var(--color-primary)] px-3 py-2 text-xs font-semibold text-[var(--color-primary)] transition duration-200 hover:bg-[var(--color-accent)]/45"
+            >
+              {showMasterWord ? 'Slėpti vedėjui' : 'Rodyti žodį vedėjui'}
+            </button>
+          </div>
 
-        {showMasterWord && (
-          <p className="mt-3 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-200 transition">
-            Vedejo zodis: <span className="font-black">{selectedWord}</span>
-          </p>
-        )}
+          {showMasterWord && (
+            <p className="mt-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-sm">
+              Vedėjo žodis: <span className="font-semibold text-[var(--color-primary)]">{selectedWord}</span>
+            </p>
+          )}
 
-        <h1 className="mt-6 text-center text-3xl font-black sm:text-4xl">{currentPlayer}</h1>
+          <h1 className="mt-6 text-center text-3xl font-bold leading-tight">{currentPlayer}</h1>
 
-        <div className="mt-5 rounded-2xl border border-slate-700 bg-slate-800/80 p-6 text-center">
-          {!revealed ? (
-            <>
-              <p className="text-sm text-slate-300">Paduok telefona tik siam zaidejui</p>
-              <button
-                type="button"
-                onClick={() => setRevealed(true)}
-                className="mt-5 w-full rounded-xl bg-fuchsia-500 px-6 py-4 text-xl font-black text-white transition hover:bg-fuchsia-400"
-              >
-                Tap to Reveal
-              </button>
-            </>
-          ) : isImpostor ? (
-            <>
-              <p className="text-xs font-bold uppercase tracking-wide text-rose-300">IMPOSTOR</p>
-              <p className="mt-2 text-4xl font-black text-rose-200 sm:text-5xl">IMPOSTORIUS</p>
-              <p className="mt-3 text-sm text-rose-100">Tu be zodzio. Sukis is padeties, seni.</p>
-            </>
-          ) : (
-            <>
-              <p className="text-xs font-bold uppercase tracking-wide text-emerald-300">
-                Slaptas zodis
-              </p>
-              <p className="mt-2 text-3xl font-black text-emerald-200 sm:text-4xl">{selectedWord}</p>
-              <p className="mt-3 text-sm text-emerald-100">Nesudegink info. Buk ramus.</p>
-            </>
+          <div className="mt-5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] p-6 text-center">
+            {!revealed ? (
+              <>
+                <p className="text-sm text-[var(--color-muted)]">
+                  Paduok telefoną šiam žaidėjui ir laikyk mygtuką, kad atskleistum.
+                </p>
+                <button
+                  type="button"
+                  onPointerDown={startRevealHold}
+                  onPointerUp={cancelRevealHold}
+                  onPointerLeave={cancelRevealHold}
+                  onPointerCancel={cancelRevealHold}
+                  onKeyDown={(event) => {
+                    if ((event.key === 'Enter' || event.key === ' ') && !isHoldingReveal) {
+                      event.preventDefault()
+                      startRevealHold()
+                    }
+                  }}
+                  onKeyUp={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      cancelRevealHold()
+                    }
+                  }}
+                  className={`mt-5 w-full rounded-xl border border-[var(--color-primary)] px-6 py-4 text-lg font-semibold transition duration-200 ${
+                    isHoldingReveal
+                      ? 'bg-[var(--color-primary)] text-[var(--color-surface)]'
+                      : 'bg-[var(--color-surface)] text-[var(--color-primary)] hover:bg-[var(--color-accent)]/35'
+                  }`}
+                >
+                  {isHoldingReveal ? 'Laikyk... atskleidžiama' : 'Laikyk nuspaudęs, kad atskleistum'}
+                </button>
+              </>
+            ) : isImpostor ? (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#9f4d49]">IMPOSTOR</p>
+                <p className="mt-2 text-4xl font-bold text-[#9f4d49] sm:text-5xl">IMPOSTORIUS</p>
+                <p className="mt-3 text-sm text-[var(--color-muted)]">Tu be žodžio. Išsisuk gudriai.</p>
+              </>
+            ) : (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+                  Slaptas žodis
+                </p>
+                <p className="mt-2 text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">{selectedWord}</p>
+                <p className="mt-3 text-sm text-[var(--color-muted)]">Neišduok informacijos kitiems.</p>
+              </>
+            )}
+          </div>
+
+          {revealed && (
+            <button type="button" onClick={nextPlayer} className={`mt-6 ${primaryButtonClass}`}>
+              {currentPlayerIndex === players.length - 1 ? 'Baigti reveal' : 'Kitas žaidėjas'}
+            </button>
           )}
         </div>
-
-        {revealed && (
-          <button
-            type="button"
-            onClick={nextPlayer}
-            className="mt-6 w-full rounded-xl bg-cyan-500 px-6 py-4 text-lg font-black text-slate-950 transition hover:bg-cyan-400"
-          >
-            {currentPlayerIndex === players.length - 1 ? 'Baigti reveal' : 'Kitas zaidejas'}
-          </button>
-        )}
       </div>
     </main>
   )

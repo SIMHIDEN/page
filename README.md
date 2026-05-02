@@ -1,15 +1,17 @@
 # Imposter Party LT (React + TypeScript + TailwindCSS)
 
-A lightweight, mobile-first web app for the Imposter party game.
+A lightweight, phone-first web app for the Imposter party game.
 
 ## Features
 
+- Minimal soft-brown UI theme
 - Player setup with add/remove names
 - Impostor count selection (default: 1)
-- Category dropdown (default: **Lithuanian**)
+- Fixed Lithuanian custom word database
 - Per-player reveal flow with progress
+- Hold-to-reveal privacy interaction (press and hold to show role/word)
 - Secret word for regular players, `IMPOSTORIUS` for impostors
-- Lithuanian words + Lithuanian slang category
+- Randomly selected player starts the discussion after reveals
 
 ## Run locally
 

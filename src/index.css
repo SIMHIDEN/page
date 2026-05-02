@@ -2,10 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-bg: #f8f5f0;
+  --color-bg-soft: #eae0d5;
+  --color-surface: #fffdf9;
+  --color-primary: #7b5b42;
+  --color-secondary: #a38b71;
+  --color-accent: #c7b7a6;
+  --color-text: #333333;
+  --color-muted: #666666;
+  --color-border: #d4c9bf;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  background: #020617;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family:
     Inter,
     system-ui,
