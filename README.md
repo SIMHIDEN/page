@@ -1,6 +1,8 @@
-# Imposter Party LT (React + TypeScript + TailwindCSS)
+# Page Hub + Imposter Party LT (React + TypeScript + TailwindCSS)
 
-A lightweight, phone-first web app for the Imposter party game.
+This repository now deploys two pages under GitHub Pages:
+- Hub landing: `/page/`
+- Imposter app: `/page/imposter/`
 
 ## Features
 
@@ -26,6 +28,10 @@ npm run dev
 ```bash
 npm run build
 ```
+
+Build output layout:
+- `dist/index.html` + `dist/hub.css` for the hub
+- `dist/imposter/*` for the game app
 
 ## Push to GitHub
 
