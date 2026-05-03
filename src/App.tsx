@@ -26,9 +26,10 @@ function App() {
   const [selectedWord, setSelectedWord] = useState('')
   const [impostorIndices, setImpostorIndices] = useState<number[]>([])
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0)
-  const [revealed, setRevealed] = useState(false)
   const [theme, setTheme] = useState<Theme>('original')
   const [isHoldingReveal, setIsHoldingReveal] = useState(false)
+  const [isRevealVisible, setIsRevealVisible] = useState(false)
+  const [hasRevealedCurrentPlayer, setHasRevealedCurrentPlayer] = useState(false)
   const [discussionStarter, setDiscussionStarter] = useState('')
   const holdTimerRef = useRef<number | null>(null)
 
@@ -71,8 +72,9 @@ function App() {
     setSelectedWord(nextWord)
     setImpostorIndices(nextImpostors)
     setCurrentPlayerIndex(0)
-    setRevealed(false)
     setIsHoldingReveal(false)
+    setIsRevealVisible(false)
+    setHasRevealedCurrentPlayer(false)
     setDiscussionStarter('')
     clearHoldTimer()
     setPhase('reveal')
@@ -81,12 +83,17 @@ function App() {
   const nextPlayer = () => {
     if (currentPlayerIndex === players.length - 1) {
       setDiscussionStarter(players[Math.floor(Math.random() * players.length)] ?? '')
+      setIsHoldingReveal(false)
+      setIsRevealVisible(false)
+      setHasRevealedCurrentPlayer(false)
+      clearHoldTimer()
       setPhase('done')
       return
     }
     setCurrentPlayerIndex((prev) => prev + 1)
-    setRevealed(false)
     setIsHoldingReveal(false)
+    setIsRevealVisible(false)
+    setHasRevealedCurrentPlayer(false)
     clearHoldTimer()
   }
 
@@ -95,27 +102,29 @@ function App() {
     setSelectedWord('')
     setImpostorIndices([])
     setCurrentPlayerIndex(0)
-    setRevealed(false)
     setIsHoldingReveal(false)
+    setIsRevealVisible(false)
+    setHasRevealedCurrentPlayer(false)
     setDiscussionStarter('')
     clearHoldTimer()
   }
 
   const startRevealHold = () => {
-    if (revealed) return
+    if (isHoldingReveal) return
     clearHoldTimer()
     setIsHoldingReveal(true)
+    setIsRevealVisible(false)
     holdTimerRef.current = window.setTimeout(() => {
-      setRevealed(true)
-      setIsHoldingReveal(false)
+      setIsRevealVisible(true)
+      setHasRevealedCurrentPlayer(true)
       holdTimerRef.current = null
     }, HOLD_TO_REVEAL_MS)
   }
 
   const cancelRevealHold = () => {
-    if (revealed) return
     clearHoldTimer()
     setIsHoldingReveal(false)
+    setIsRevealVisible(false)
   }
 
   const isImpostor = impostorIndices.includes(currentPlayerIndex)
@@ -282,64 +291,68 @@ function App() {
 
           <h1 className="mt-6 text-center text-3xl font-bold leading-tight">{currentPlayer}</h1>
 
-          <div className="mt-5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] p-6 text-center">
-            {!revealed ? (
-              <>
-                <p className="text-sm text-[var(--color-muted)]">
-                  Paduok telefoną šiam žaidėjui ir laikyk mygtuką, kad atskleistum.
-                </p>
-                <button
-                  type="button"
-                  onPointerDown={(event) => {
-                    event.preventDefault()
-                    startRevealHold()
-                  }}
-                  onMouseDown={(event) => {
-                    event.preventDefault()
-                  }}
-                  onPointerUp={cancelRevealHold}
-                  onPointerLeave={cancelRevealHold}
-                  onPointerCancel={cancelRevealHold}
-                  draggable={false}
-                  onKeyDown={(event) => {
-                    if ((event.key === 'Enter' || event.key === ' ') && !isHoldingReveal) {
-                      event.preventDefault()
-                      startRevealHold()
-                    }
-                  }}
-                  onKeyUp={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault()
-                      cancelRevealHold()
-                    }
-                  }}
-                  className={`reveal-hold-button mt-5 w-full rounded-xl border border-[var(--color-primary)] px-6 py-4 text-lg font-semibold transition duration-200 ${
-                    isHoldingReveal
-                      ? 'bg-[var(--color-primary)] text-[var(--color-text-on-primary)]'
-                      : 'bg-[var(--color-surface)] text-[var(--color-primary)] hover:bg-[var(--color-accent)]/35'
-                  }`}
-                >
-                  {isHoldingReveal ? 'Laikyk... atskleidžiama' : 'Laikyk nuspaudęs, kad atskleistum'}
-                </button>
-              </>
-            ) : isImpostor ? (
-              <>
-                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-danger)]">IMPOSTOR</p>
-                <p className="mt-2 text-4xl font-bold text-[var(--color-danger)] sm:text-5xl">IMPOSTORIUS</p>
-                <p className="mt-3 text-sm text-[var(--color-muted)]">Tu be žodžio. Išsisuk gudriai.</p>
-              </>
-            ) : (
-              <>
-                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
-                  Slaptas žodis
-                </p>
-                <p className="mt-2 text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">{selectedWord}</p>
-                <p className="mt-3 text-sm text-[var(--color-muted)]">Neišduok informacijos kitiems.</p>
-              </>
-            )}
+          <div className="mt-5 text-center">
+            <button
+              type="button"
+              onPointerDown={(event) => {
+                event.preventDefault()
+                startRevealHold()
+              }}
+              onMouseDown={(event) => {
+                event.preventDefault()
+              }}
+              onPointerUp={cancelRevealHold}
+              onPointerLeave={cancelRevealHold}
+              onPointerCancel={cancelRevealHold}
+              draggable={false}
+              onKeyDown={(event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && !isHoldingReveal) {
+                  event.preventDefault()
+                  startRevealHold()
+                }
+              }}
+              onKeyUp={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  cancelRevealHold()
+                }
+              }}
+              className={`reveal-hold-button mx-auto flex aspect-square w-full max-w-[22rem] flex-col items-center justify-center rounded-3xl border-2 px-5 text-center transition duration-200 ${
+                isHoldingReveal
+                  ? 'bg-[var(--color-primary)] text-[var(--color-text-on-primary)]'
+                  : 'bg-[var(--color-bg-soft)] text-[var(--color-primary)] hover:bg-[var(--color-accent)]/35'
+              }`}
+            >
+              {isRevealVisible ? (
+                isImpostor ? (
+                  <>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-danger)]">
+                      IMPOSTOR
+                    </p>
+                    <p className="mt-3 text-4xl font-black leading-none text-[var(--color-danger)] sm:text-5xl">
+                      IMPOSTORIUS
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-on-primary)] opacity-80">
+                      Slaptas žodis
+                    </p>
+                    <p className="mt-3 break-words text-4xl font-black leading-tight sm:text-5xl">{selectedWord}</p>
+                  </>
+                )
+              ) : (
+                <>
+                  <p className="text-base font-semibold sm:text-lg">
+                    {isHoldingReveal ? 'Laikyk... atskleidžiama' : 'Laikyk nuspaudęs, kad atskleistum'}
+                  </p>
+                  <p className="mt-3 text-xs text-[var(--color-muted)]">Paleidus paslaptis vėl pasislepia.</p>
+                </>
+              )}
+            </button>
           </div>
 
-          {revealed && (
+          {hasRevealedCurrentPlayer && (
             <button type="button" onClick={nextPlayer} className={`mt-6 ${primaryButtonClass}`}>
               {currentPlayerIndex === players.length - 1 ? 'Baigti reveal' : 'Kitas žaidėjas'}
             </button>
