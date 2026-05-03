@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { wordCategories } from './words'
 
 type GamePhase = 'setup' | 'reveal' | 'done'
+type Theme = 'original' | 'brat'
 const HOLD_TO_REVEAL_MS = 550
 
 function pickRandomWord(words: string[]): string {
@@ -26,7 +27,7 @@ function App() {
   const [impostorIndices, setImpostorIndices] = useState<number[]>([])
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const [showMasterWord, setShowMasterWord] = useState(false)
+  const [theme, setTheme] = useState<Theme>('original')
   const [isHoldingReveal, setIsHoldingReveal] = useState(false)
   const [discussionStarter, setDiscussionStarter] = useState('')
   const holdTimerRef = useRef<number | null>(null)
@@ -46,6 +47,10 @@ function App() {
       clearHoldTimer()
     }
   }, [])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
 
   const addPlayer = () => {
     const name = playerInput.trim()
@@ -67,7 +72,6 @@ function App() {
     setImpostorIndices(nextImpostors)
     setCurrentPlayerIndex(0)
     setRevealed(false)
-    setShowMasterWord(false)
     setIsHoldingReveal(false)
     setDiscussionStarter('')
     clearHoldTimer()
@@ -92,7 +96,6 @@ function App() {
     setImpostorIndices([])
     setCurrentPlayerIndex(0)
     setRevealed(false)
-    setShowMasterWord(false)
     setIsHoldingReveal(false)
     setDiscussionStarter('')
     clearHoldTimer()
@@ -122,16 +125,29 @@ function App() {
     'w-full rounded-xl bg-[var(--color-primary)] px-5 py-3.5 text-sm font-semibold text-[var(--color-text-on-primary)] transition duration-200 hover:brightness-95 disabled:cursor-not-allowed disabled:bg-[var(--color-accent)] disabled:text-[var(--color-muted)]'
   const inputClass =
     'w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition duration-200 placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15'
+  const secondaryButtonClass =
+    'rounded-lg border-2 border-[var(--color-primary)] bg-transparent px-3 py-2 text-xs font-semibold text-[var(--color-primary)] transition duration-200 hover:bg-[var(--color-accent)]/45'
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'original' ? 'brat' : 'original'))
+  }
+  const themeSwitchLabel = theme === 'original' ? 'Brat tema' : 'Originali tema'
 
   if (phase === 'setup') {
     return (
       <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
         <div className="mx-auto w-full max-w-md px-4 py-5 sm:max-w-lg sm:py-8">
           <div className={`${panelClass} p-5 sm:p-6`}>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-              Imposter Party LT
-            </p>
-            <h1 className="mt-2 text-3xl font-bold leading-tight">Paruošk raundą</h1>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                  Imposter Party LT
+                </p>
+                <h1 className="mt-2 text-3xl font-bold leading-tight">Paruošk raundą</h1>
+              </div>
+              <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
+                {themeSwitchLabel}
+              </button>
+            </div>
             <p className="mt-2 text-sm text-[var(--color-muted)] sm:text-base">
               Minimalus phone-first ekranas: įvesk žaidėjus, pasirink impostorių kiekį ir pradėk.
             </p>
@@ -229,9 +245,12 @@ function App() {
       <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
         <div className="mx-auto flex w-full max-w-md items-center px-4 py-8 sm:max-w-lg">
           <div className={`${panelClass} w-full p-5 text-center sm:p-7`}>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-              Raundas baigtas
-            </p>
+            <div className="flex items-start justify-between gap-3 text-left">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Raundas baigtas</p>
+              <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
+                {themeSwitchLabel}
+              </button>
+            </div>
             <h1 className="mt-2 text-3xl font-bold leading-tight">Diskusijos metas</h1>
             <p className="mt-3 text-sm text-[var(--color-muted)] sm:text-base">
               Dabar aptarkite užuominas ir bandykite atspėti impostorių.
@@ -256,20 +275,10 @@ function App() {
             <p className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-muted)]">
               Žaidėjas {currentPlayerIndex + 1} iš {players.length}
             </p>
-            <button
-              type="button"
-              onClick={() => setShowMasterWord((prev) => !prev)}
-              className="rounded-lg border-2 border-[var(--color-primary)] px-3 py-2 text-xs font-semibold text-[var(--color-primary)] transition duration-200 hover:bg-[var(--color-accent)]/45"
-            >
-              {showMasterWord ? 'Slėpti vedėjui' : 'Rodyti žodį vedėjui'}
+            <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
+              {themeSwitchLabel}
             </button>
           </div>
-
-          {showMasterWord && (
-            <p className="mt-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-sm">
-              Vedėjo žodis: <span className="font-semibold text-[var(--color-primary)]">{selectedWord}</span>
-            </p>
-          )}
 
           <h1 className="mt-6 text-center text-3xl font-bold leading-tight">{currentPlayer}</h1>
 
@@ -281,10 +290,17 @@ function App() {
                 </p>
                 <button
                   type="button"
-                  onPointerDown={startRevealHold}
+                  onPointerDown={(event) => {
+                    event.preventDefault()
+                    startRevealHold()
+                  }}
+                  onMouseDown={(event) => {
+                    event.preventDefault()
+                  }}
                   onPointerUp={cancelRevealHold}
                   onPointerLeave={cancelRevealHold}
                   onPointerCancel={cancelRevealHold}
+                  draggable={false}
                   onKeyDown={(event) => {
                     if ((event.key === 'Enter' || event.key === ' ') && !isHoldingReveal) {
                       event.preventDefault()
@@ -297,7 +313,7 @@ function App() {
                       cancelRevealHold()
                     }
                   }}
-                  className={`mt-5 w-full rounded-xl border border-[var(--color-primary)] px-6 py-4 text-lg font-semibold transition duration-200 ${
+                  className={`reveal-hold-button mt-5 w-full rounded-xl border border-[var(--color-primary)] px-6 py-4 text-lg font-semibold transition duration-200 ${
                     isHoldingReveal
                       ? 'bg-[var(--color-primary)] text-[var(--color-text-on-primary)]'
                       : 'bg-[var(--color-surface)] text-[var(--color-primary)] hover:bg-[var(--color-accent)]/35'

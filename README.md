@@ -4,12 +4,13 @@ A lightweight, phone-first web app for the Imposter party game.
 
 ## Features
 
-- Minimal soft-brown UI theme
+- Theme switcher: original brown or brat green/black
 - Player setup with add/remove names
 - Impostor count selection (default: 1)
 - Fixed Lithuanian custom word database
 - Per-player reveal flow with progress
 - Hold-to-reveal privacy interaction (press and hold to show role/word)
+- No organizer master-word reveal button in player reveal view
 - Secret word for regular players, `IMPOSTORIUS` for impostors
 - Randomly selected player starts the discussion after reveals
 
