@@ -144,13 +144,13 @@ function App() {
 
   const isImpostor = impostorIndices.includes(currentPlayerIndex)
   const panelClass =
-    'rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_2px_8px_rgba(123,91,66,0.08)]'
+    'rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] panel-neon'
   const primaryButtonClass =
-    'w-full rounded-xl bg-[var(--color-primary)] px-5 py-3.5 text-sm font-semibold text-[var(--color-text-on-primary)] transition duration-200 hover:brightness-95 disabled:cursor-not-allowed disabled:bg-[var(--color-accent)] disabled:text-[var(--color-muted)]'
+    'w-full rounded-md bg-[var(--color-primary)] px-5 py-3.5 text-sm font-bold tracking-[0.12em] uppercase text-[var(--color-text-on-primary)] transition duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:bg-[var(--color-accent)] disabled:text-[var(--color-muted)] btn-neon-glow'
   const inputClass =
-    'w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition duration-200 placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15'
+    'w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition duration-200 placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15'
   const secondaryButtonClass =
-    'rounded-lg border-2 border-[var(--color-primary)] bg-transparent px-3 py-2 text-xs font-semibold text-[var(--color-primary)] transition duration-200 hover:bg-[var(--color-accent)]/45'
+    'rounded-md border border-[var(--color-primary)]/50 bg-transparent px-3 py-2 text-[10px] font-bold tracking-[0.18em] uppercase text-[var(--color-primary)] transition duration-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/10'
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'original' ? 'brat' : 'original'))
   }
@@ -163,10 +163,10 @@ function App() {
           <div className={`${panelClass} p-5 sm:p-6`}>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                  Imposter Party LT
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] neon-text text-[var(--color-primary)]">
+                  // Imposter Party LT
                 </p>
-                <h1 className="mt-2 text-3xl font-bold leading-tight">Paruošk raundą</h1>
+                <h1 className="mt-2 text-3xl font-black leading-tight tracking-tight">Paruošk raundą</h1>
               </div>
               <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
                 {themeSwitchLabel}
@@ -302,7 +302,7 @@ function App() {
         <div className="mx-auto flex w-full max-w-md items-center px-4 py-8 sm:max-w-lg">
           <div className={`${panelClass} w-full p-5 text-center sm:p-7`}>
             <div className="flex items-start justify-between gap-3 text-left">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Raundas baigtas</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] neon-text text-[var(--color-primary)]">// Raundas baigtas</p>
               <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
                 {themeSwitchLabel}
               </button>
@@ -364,48 +364,58 @@ function App() {
                   cancelRevealHold()
                 }
               }}
-              className={`reveal-hold-button mx-auto flex aspect-square w-full max-w-[22rem] flex-col items-center justify-center rounded-3xl border-2 px-5 text-center transition duration-200 ${
-                isHoldingReveal
-                  ? 'bg-[var(--color-primary)] text-[var(--color-text-on-primary)]'
-                  : 'bg-[var(--color-bg-soft)] text-[var(--color-primary)] hover:bg-[var(--color-accent)]/35'
+              className={`reveal-hold-button mx-auto flex aspect-square w-full max-w-[22rem] flex-col items-center justify-center rounded-lg border-2 px-5 text-center transition duration-300 ${
+                isRevealVisible && isImpostor
+                  ? 'bg-[var(--color-danger)]/10 impostor-reveal-glow'
+                  : isHoldingReveal
+                  ? 'bg-[var(--color-primary)]/10 hold-active-glow'
+                  : 'bg-[var(--color-bg-soft)] hold-idle-border'
               }`}
             >
               {isRevealVisible ? (
                 isImpostor ? (
                   <>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-danger)]">
-                      IMPOSTOR
+                    <p className="text-xs font-bold uppercase tracking-[0.25em] danger-text text-[var(--color-danger)]">
+                      ⚠ IMPOSTOR
                     </p>
-                    <p className="mt-3 text-4xl font-black leading-none text-[var(--color-danger)] sm:text-5xl">
+                    <p className="mt-3 text-4xl font-black leading-none danger-text text-[var(--color-danger)] sm:text-5xl">
                       IMPOSTORIUS
                     </p>
-                    {wordHints[selectedWord] && (
-                      <p className="mt-4 rounded-lg border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10 px-3 py-2 text-xs font-medium text-[var(--color-danger)] opacity-90">
-                        🕵️ Užuomina: {wordHints[selectedWord]}
-                      </p>
-                    )}
                   </>
                 ) : (
                   <>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-on-primary)] opacity-80">
-                      Slaptas žodis
+                    <p className="text-xs font-bold uppercase tracking-[0.25em] neon-text text-[var(--color-primary)]">
+                      // Slaptas žodis
                     </p>
-                    <p className="mt-3 break-words text-4xl font-black leading-tight sm:text-5xl">{selectedWord}</p>
+                    <p className="mt-3 break-words text-4xl font-black leading-tight neon-text text-[var(--color-primary)] sm:text-5xl">{selectedWord}</p>
                   </>
                 )
               ) : (
                 <>
-                  <p className="text-base font-semibold sm:text-lg">
-                    {isHoldingReveal ? 'Laikyk... atskleidžiama' : 'Laikyk nuspaudęs, kad atskleistum'}
+                  <p className="text-base font-semibold text-[var(--color-primary)] sm:text-lg">
+                    {isHoldingReveal ? 'Laikyk...' : 'Laikyk nuspaudęs'}
                   </p>
-                  <p className="mt-3 text-xs text-[var(--color-muted)]">Paleidus paslaptis vėl pasislepia.</p>
+                  <p className="mt-3 text-xs text-[var(--color-muted)]">
+                    {isHoldingReveal ? 'atskleidžiama...' : 'kad atskleistum'}
+                  </p>
                 </>
               )}
             </button>
           </div>
 
+          {hasRevealedCurrentPlayer && isImpostor && wordHints[selectedWord] && (
+            <div className="mt-4 hint-panel rounded-md px-4 py-3.5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--color-danger)] opacity-70">
+                🕵 Impostoriaus užuomina
+              </p>
+              <p className="mt-1.5 text-sm font-medium text-[var(--color-danger)]">
+                {wordHints[selectedWord]}
+              </p>
+            </div>
+          )}
+
           {hasRevealedCurrentPlayer && (
-            <button type="button" onClick={nextPlayer} className={`mt-6 ${primaryButtonClass}`}>
+            <button type="button" onClick={nextPlayer} className={`mt-4 ${primaryButtonClass}`}>
               {currentPlayerIndex === players.length - 1 ? 'Baigti reveal' : 'Kitas žaidėjas'}
             </button>
           )}

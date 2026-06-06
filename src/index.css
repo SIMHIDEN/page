@@ -3,17 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #1b1511;
-  --color-bg-soft: #241d18;
-  --color-surface: #2d241d;
-  --color-primary: #d0b296;
-  --color-secondary: #b59475;
-  --color-accent: #7b5b42;
-  --color-text: #f3e8dd;
-  --color-muted: #ccb8a5;
-  --color-border: #5a4739;
-  --color-danger: #e2a39f;
-  --color-text-on-primary: #23170f;
+  --color-bg: #050812;
+  --color-bg-soft: #080f1e;
+  --color-surface: #0c1428;
+  --color-primary: #00e5ff;
+  --color-secondary: #00b8d4;
+  --color-accent: #0a2535;
+  --color-text: #ddf4ff;
+  --color-muted: #4a8fa8;
+  --color-border: #1a3a55;
+  --color-danger: #ff2d78;
+  --color-text-on-primary: #010810;
+  --grid-color: rgba(0, 229, 255, 0.04);
 }
 
 :root[data-theme='brat'] {
@@ -28,22 +29,19 @@
   --color-border: #2a4a2a;
   --color-danger: #ff8f7a;
   --color-text-on-primary: #061006;
+  --grid-color: rgba(115, 255, 51, 0.04);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--color-bg);
+  background-color: var(--color-bg);
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 32px 32px;
   color: var(--color-text);
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    Segoe UI,
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
 #root {
@@ -55,4 +53,54 @@ body {
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   touch-action: none;
+}
+
+.panel-neon {
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.06),
+    0 4px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(0, 229, 255, 0.04);
+}
+
+.btn-neon-glow {
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.btn-neon-glow:hover:not(:disabled) {
+  box-shadow: 0 0 22px rgba(0, 229, 255, 0.55), 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.hold-idle-border {
+  border-color: var(--color-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.hold-idle-border:hover {
+  border-color: rgba(0, 229, 255, 0.35);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.08);
+}
+
+.hold-active-glow {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 28px rgba(0, 229, 255, 0.55), 0 0 56px rgba(0, 229, 255, 0.15), inset 0 0 18px rgba(0, 229, 255, 0.07);
+}
+
+.impostor-reveal-glow {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 28px rgba(255, 45, 120, 0.55), 0 0 56px rgba(255, 45, 120, 0.15), inset 0 0 18px rgba(255, 45, 120, 0.07);
+}
+
+.neon-text {
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.65);
+}
+
+.danger-text {
+  text-shadow: 0 0 12px rgba(255, 45, 120, 0.65);
+}
+
+.hint-panel {
+  border: 1px solid rgba(255, 45, 120, 0.35);
+  background: rgba(255, 45, 120, 0.07);
+  box-shadow: 0 0 14px rgba(255, 45, 120, 0.12), inset 0 0 12px rgba(255, 45, 120, 0.04);
 }
