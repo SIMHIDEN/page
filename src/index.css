@@ -1,21 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --color-bg: #07051a;
-  --color-bg-soft: #0f0c2a;
-  --color-surface: #14103a;
-  --color-primary: #5133f5;
-  --color-secondary: #3d22d4;
-  --color-accent: #2a1a7a;
-  --color-text: #E8FFC1;
-  --color-muted: #9080d0;
-  --color-border: #5133f5;
-  --color-danger: #ee0798;
-  --color-text-on-primary: #E8FFC1;
+  --color-bg: #292216;
+  --color-bg-soft: #352819;
+  --color-surface: #3d2f1c;
+  --color-primary: #a88b5b;
+  --color-secondary: #8a7048;
+  --color-accent: #685638;
+  --color-text: #eed09e;
+  --color-muted: #8a7048;
+  --color-border: #685638;
+  --color-danger: #c47050;
+  --color-text-on-primary: #1a1409;
 }
 
 :root[data-theme='brat'] {
@@ -27,7 +27,7 @@
   --color-accent: #245d1d;
   --color-text: #e8ffe0;
   --color-muted: #a8c2a2;
-  --color-border: #73ff33;
+  --color-border: #47e91f;
   --color-danger: #ff4499;
   --color-text-on-primary: #061006;
 }
@@ -36,10 +36,10 @@ body {
   margin: 0;
   min-height: 100vh;
   background-color: var(--color-bg);
-  background-image: radial-gradient(circle, rgba(81, 51, 245, 0.18) 1px, transparent 1px);
-  background-size: 22px 22px;
   color: var(--color-text);
-  font-family: 'Kosugi Maru', system-ui, sans-serif;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  scrollbar-color: var(--color-text) var(--color-bg);
 }
 
 #root {
@@ -53,41 +53,50 @@ body {
   touch-action: none;
 }
 
+/* Dashed border panel — key natural-grid element */
 .panel-neon {
-  border: 3px outset var(--color-primary) !important;
-  box-shadow: 0 4px 20px rgba(81, 51, 245, 0.25);
+  border: 3px dashed var(--color-border) !important;
+  box-shadow: none;
+}
+
+/* Title bar — accent bg with pixel font, like .title in natural-grid */
+.title-bar {
+  background-color: var(--color-accent);
+  color: var(--color-text);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  line-height: 1.6;
+  padding: 6px 12px;
+  letter-spacing: 0.05em;
 }
 
 .btn-neon-glow {
-  border: 2px outset var(--color-text);
-  transition: filter 0.1s, border-style 0.1s;
+  transition: background-color 0.15s, color 0.15s;
 }
 
 .btn-neon-glow:hover:not(:disabled) {
-  filter: brightness(1.1);
-  border-style: inset;
+  filter: brightness(1.12);
 }
 
+/* Hold button states — dashed borders matching natural-grid style */
 .hold-idle-border {
-  border: 2px outset var(--color-primary);
-  transition: border-color 0.2s;
+  border: 3px dashed var(--color-border);
 }
 
 .hold-idle-border:hover {
-  border-color: var(--color-text);
+  border-color: var(--color-primary);
 }
 
 .hold-active-glow {
-  border: 3px inset var(--color-primary) !important;
-  background-color: rgba(81, 51, 245, 0.15) !important;
+  border: 3px dashed var(--color-primary) !important;
 }
 
 .impostor-reveal-glow {
-  border: 3px inset var(--color-danger) !important;
-  background-color: rgba(238, 7, 152, 0.1) !important;
+  border: 3px dashed var(--color-danger) !important;
 }
 
+/* Hint panel — dashed danger border */
 .hint-panel {
-  border: 2px dashed var(--color-danger);
-  background: rgba(238, 7, 152, 0.07);
+  border: 3px dashed var(--color-danger);
+  background: rgba(196, 112, 80, 0.07);
 }

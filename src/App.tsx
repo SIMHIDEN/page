@@ -152,13 +152,13 @@ function App() {
 
   const isImpostor = impostorIndices.includes(currentPlayerIndex)
   const panelClass =
-    'rounded-sm bg-[var(--color-surface)] panel-neon'
+    'rounded-none bg-[var(--color-surface)] panel-neon'
   const primaryButtonClass =
-    'w-full rounded-sm bg-[var(--color-primary)] px-5 py-3.5 text-sm font-bold text-[var(--color-text-on-primary)] transition disabled:cursor-not-allowed disabled:opacity-50 btn-neon-glow'
+    'w-full rounded-none bg-[var(--color-accent)] px-5 py-3.5 text-base font-bold text-[var(--color-text)] transition hover:bg-[var(--color-primary)] hover:text-[var(--color-text-on-primary)] disabled:cursor-not-allowed disabled:opacity-40 btn-neon-glow'
   const inputClass =
-    'w-full rounded-sm border-2 border-[var(--color-primary)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition placeholder:text-[var(--color-muted)] focus:border-[var(--color-text)]'
+    'w-full rounded-none border-b-2 border-dashed border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)]'
   const secondaryButtonClass =
-    'rounded-sm border-2 border-[var(--color-primary)] bg-[var(--color-accent)] px-3 py-1.5 text-xs font-bold text-[var(--color-text)] transition hover:bg-[var(--color-primary)]'
+    'rounded-none border border-dashed border-[var(--color-border)] bg-transparent px-3 py-1.5 text-xs text-[var(--color-text)] transition hover:bg-[var(--color-accent)]'
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'original' ? 'brat' : 'original'))
   }
@@ -171,10 +171,8 @@ function App() {
           <div className={`${panelClass} p-5 sm:p-6`}>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                  Imposter Party LT
-                </p>
-                <h1 className="mt-2 text-3xl font-bold leading-tight">Paruošk raundą</h1>
+                <p className="title-bar">Imposter Party LT</p>
+                <h1 className="mt-3 text-3xl font-bold leading-tight" style={{fontFamily:"'Press Start 2P', monospace", fontSize:'1rem', lineHeight:'1.8'}}>Paruošk raundą</h1>
               </div>
               <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
                 {themeSwitchLabel}
@@ -258,10 +256,9 @@ function App() {
             </section>
 
             {prevImpostorIndices.length > 0 && (
-              <section className="mt-5 space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-muted)]">
-                  Kartoti iš paskutinio raundo
-                </p>
+              <section className="mt-5 space-y-3 rounded-none border-2 border-dashed border-[var(--color-border)] bg-[var(--color-bg-soft)]">
+                <p className="title-bar">Kartoti is paskutinio raundo</p>
+                <div className="space-y-3 px-4 pb-3 pt-1">
                 <label className="flex cursor-pointer items-center gap-3">
                   <input
                     type="checkbox"
@@ -286,6 +283,7 @@ function App() {
                     )}
                   </span>
                 </label>
+                </div>
               </section>
             )}
 
@@ -310,7 +308,7 @@ function App() {
         <div className="mx-auto flex w-full max-w-md items-center px-4 py-8 sm:max-w-lg">
           <div className={`${panelClass} w-full p-5 text-center sm:p-7`}>
             <div className="flex items-start justify-between gap-3 text-left">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Raundas baigtas</p>
+              <p className="title-bar">Raundas baigtas</p>
               <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
                 {themeSwitchLabel}
               </button>
@@ -336,8 +334,8 @@ function App() {
       <div className="mx-auto w-full max-w-md px-4 py-5 sm:max-w-lg sm:py-8">
         <div className={`${panelClass} p-5 sm:p-6`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-muted)]">
-              Žaidėjas {revealStep + 1} iš {players.length}
+            <p className="title-bar">
+              Zaidejas {revealStep + 1} is {players.length}
             </p>
             <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
               {themeSwitchLabel}
@@ -372,7 +370,7 @@ function App() {
                   cancelRevealHold()
                 }
               }}
-              className={`reveal-hold-button mx-auto flex aspect-square w-full max-w-[22rem] flex-col items-center justify-center rounded-lg border-2 px-5 text-center transition duration-300 ${
+              className={`reveal-hold-button mx-auto flex aspect-square w-full max-w-[22rem] flex-col items-center justify-center rounded-none px-5 text-center transition duration-300 ${
                 isRevealVisible && isImpostor
                   ? 'bg-[var(--color-danger)]/10 impostor-reveal-glow'
                   : isHoldingReveal
@@ -412,11 +410,9 @@ function App() {
           </div>
 
           {hasRevealedCurrentPlayer && isImpostor && wordHints[selectedWord] && (
-            <div className="mt-4 hint-panel rounded-md px-4 py-3.5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--color-danger)] opacity-70">
-                🕵 Impostoriaus užuomina
-              </p>
-              <p className="mt-1.5 text-sm font-medium text-[var(--color-danger)]">
+            <div className="mt-4 hint-panel">
+              <p className="title-bar" style={{color:'var(--color-danger)'}}>Uzuomina</p>
+              <p className="px-4 py-2 text-lg text-[var(--color-danger)]">
                 {wordHints[selectedWord]}
               </p>
             </div>
