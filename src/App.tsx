@@ -178,9 +178,6 @@ function App() {
                 {themeSwitchLabel}
               </button>
             </div>
-            <p className="mt-2 text-sm text-[var(--color-muted)] sm:text-base">
-              Minimalus phone-first ekranas: įvesk žaidėjus, pasirink impostorių kiekį ir pradėk.
-            </p>
 
             <section className="mt-6 space-y-3">
               <label htmlFor="playerName" className="block text-sm font-semibold">
