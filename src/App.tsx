@@ -9,13 +9,17 @@ function pickRandomWord(words: string[]): string {
   return words[Math.floor(Math.random() * words.length)]
 }
 
-function pickRandomImpostorIndices(playerCount: number, impostorCount: number): number[] {
-  const pool = Array.from({ length: playerCount }, (_, i) => i)
-  for (let i = pool.length - 1; i > 0; i -= 1) {
+function shuffleIndices(n: number): number[] {
+  const arr = Array.from({ length: n }, (_, i) => i)
+  for (let i = arr.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[pool[i], pool[j]] = [pool[j], pool[i]]
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
-  return pool.slice(0, impostorCount)
+  return arr
+}
+
+function pickRandomImpostorIndices(playerCount: number, impostorCount: number): number[] {
+  return shuffleIndices(playerCount).slice(0, impostorCount)
 }
 
 function App() {
@@ -25,7 +29,8 @@ function App() {
   const [impostorCount, setImpostorCount] = useState(1)
   const [selectedWord, setSelectedWord] = useState('')
   const [impostorIndices, setImpostorIndices] = useState<number[]>([])
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0)
+  const [revealOrder, setRevealOrder] = useState<number[]>([])
+  const [revealStep, setRevealStep] = useState(0)
   const [theme, setTheme] = useState<Theme>('original')
   const [isHoldingReveal, setIsHoldingReveal] = useState(false)
   const [isRevealVisible, setIsRevealVisible] = useState(false)
@@ -38,6 +43,7 @@ function App() {
   const holdTimerRef = useRef<number | null>(null)
 
   const canStart = players.length >= 3 && impostorCount >= 1 && impostorCount < players.length
+  const currentPlayerIndex = revealOrder[revealStep] ?? 0
   const currentPlayer = players[currentPlayerIndex]
 
   const clearHoldTimer = () => {
@@ -80,7 +86,8 @@ function App() {
         : pickRandomImpostorIndices(players.length, impostorCount)
     setSelectedWord(nextWord)
     setImpostorIndices(nextImpostors)
-    setCurrentPlayerIndex(0)
+    setRevealOrder(shuffleIndices(players.length))
+    setRevealStep(0)
     setIsHoldingReveal(false)
     setIsRevealVisible(false)
     setHasRevealedCurrentPlayer(false)
@@ -90,7 +97,7 @@ function App() {
   }
 
   const nextPlayer = () => {
-    if (currentPlayerIndex === players.length - 1) {
+    if (revealStep === players.length - 1) {
       const starter =
         keepSameStarter && prevDiscussionStarter
           ? prevDiscussionStarter
@@ -103,7 +110,7 @@ function App() {
       setPhase('done')
       return
     }
-    setCurrentPlayerIndex((prev) => prev + 1)
+    setRevealStep((prev) => prev + 1)
     setIsHoldingReveal(false)
     setIsRevealVisible(false)
     setHasRevealedCurrentPlayer(false)
@@ -116,7 +123,8 @@ function App() {
     setPhase('setup')
     setSelectedWord('')
     setImpostorIndices([])
-    setCurrentPlayerIndex(0)
+    setRevealOrder([])
+    setRevealStep(0)
     setIsHoldingReveal(false)
     setIsRevealVisible(false)
     setHasRevealedCurrentPlayer(false)
@@ -329,7 +337,7 @@ function App() {
         <div className={`${panelClass} p-5 sm:p-6`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-muted)]">
-              Žaidėjas {currentPlayerIndex + 1} iš {players.length}
+              Žaidėjas {revealStep + 1} iš {players.length}
             </p>
             <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
               {themeSwitchLabel}
