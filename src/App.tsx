@@ -144,13 +144,13 @@ function App() {
 
   const isImpostor = impostorIndices.includes(currentPlayerIndex)
   const panelClass =
-    'rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] panel-neon'
+    'rounded-sm bg-[var(--color-surface)] panel-neon'
   const primaryButtonClass =
-    'w-full rounded-md bg-[var(--color-primary)] px-5 py-3.5 text-sm font-bold tracking-[0.12em] uppercase text-[var(--color-text-on-primary)] transition duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:bg-[var(--color-accent)] disabled:text-[var(--color-muted)] btn-neon-glow'
+    'w-full rounded-sm bg-[var(--color-primary)] px-5 py-3.5 text-sm font-bold text-[var(--color-text-on-primary)] transition disabled:cursor-not-allowed disabled:opacity-50 btn-neon-glow'
   const inputClass =
-    'w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition duration-200 placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15'
+    'w-full rounded-sm border-2 border-[var(--color-primary)] bg-[var(--color-bg-soft)] px-4 py-3 text-base text-[var(--color-text)] outline-none transition placeholder:text-[var(--color-muted)] focus:border-[var(--color-text)]'
   const secondaryButtonClass =
-    'rounded-md border border-[var(--color-primary)]/50 bg-transparent px-3 py-2 text-[10px] font-bold tracking-[0.18em] uppercase text-[var(--color-primary)] transition duration-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/10'
+    'rounded-sm border-2 border-[var(--color-primary)] bg-[var(--color-accent)] px-3 py-1.5 text-xs font-bold text-[var(--color-text)] transition hover:bg-[var(--color-primary)]'
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'original' ? 'brat' : 'original'))
   }
