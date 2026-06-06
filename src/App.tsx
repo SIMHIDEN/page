@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { wordCategories } from './words'
+import { wordCategories, wordHints } from './words'
 
 type GamePhase = 'setup' | 'reveal' | 'done'
 type Theme = 'original' | 'brat'
@@ -31,6 +31,10 @@ function App() {
   const [isRevealVisible, setIsRevealVisible] = useState(false)
   const [hasRevealedCurrentPlayer, setHasRevealedCurrentPlayer] = useState(false)
   const [discussionStarter, setDiscussionStarter] = useState('')
+  const [keepSameImpostor, setKeepSameImpostor] = useState(false)
+  const [keepSameStarter, setKeepSameStarter] = useState(false)
+  const [prevImpostorIndices, setPrevImpostorIndices] = useState<number[]>([])
+  const [prevDiscussionStarter, setPrevDiscussionStarter] = useState('')
   const holdTimerRef = useRef<number | null>(null)
 
   const canStart = players.length >= 3 && impostorCount >= 1 && impostorCount < players.length
@@ -68,7 +72,12 @@ function App() {
     if (!canStart) return
     const words = wordCategories.lithuanian.words
     const nextWord = pickRandomWord(words)
-    const nextImpostors = pickRandomImpostorIndices(players.length, impostorCount)
+    const validPrevImpostors =
+      prevImpostorIndices.length > 0 && prevImpostorIndices.every((i) => i < players.length)
+    const nextImpostors =
+      keepSameImpostor && validPrevImpostors
+        ? prevImpostorIndices
+        : pickRandomImpostorIndices(players.length, impostorCount)
     setSelectedWord(nextWord)
     setImpostorIndices(nextImpostors)
     setCurrentPlayerIndex(0)
@@ -82,7 +91,11 @@ function App() {
 
   const nextPlayer = () => {
     if (currentPlayerIndex === players.length - 1) {
-      setDiscussionStarter(players[Math.floor(Math.random() * players.length)] ?? '')
+      const starter =
+        keepSameStarter && prevDiscussionStarter
+          ? prevDiscussionStarter
+          : (players[Math.floor(Math.random() * players.length)] ?? '')
+      setDiscussionStarter(starter)
       setIsHoldingReveal(false)
       setIsRevealVisible(false)
       setHasRevealedCurrentPlayer(false)
@@ -98,6 +111,8 @@ function App() {
   }
 
   const resetGame = () => {
+    setPrevImpostorIndices(impostorIndices)
+    setPrevDiscussionStarter(discussionStarter)
     setPhase('setup')
     setSelectedWord('')
     setImpostorIndices([])
@@ -234,6 +249,38 @@ function App() {
               </div>
             </section>
 
+            {prevImpostorIndices.length > 0 && (
+              <section className="mt-5 space-y-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-muted)]">
+                  Kartoti iš paskutinio raundo
+                </p>
+                <label className="flex cursor-pointer items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={keepSameImpostor}
+                    onChange={(e) => setKeepSameImpostor(e.target.checked)}
+                    className="h-4 w-4 accent-[var(--color-primary)]"
+                  />
+                  <span className="text-sm font-medium">Tas pats impostorius</span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={keepSameStarter}
+                    onChange={(e) => setKeepSameStarter(e.target.checked)}
+                    disabled={!prevDiscussionStarter}
+                    className="h-4 w-4 accent-[var(--color-primary)] disabled:opacity-40"
+                  />
+                  <span className={`text-sm font-medium ${!prevDiscussionStarter ? 'opacity-40' : ''}`}>
+                    Tas pats pradedantysis
+                    {prevDiscussionStarter && (
+                      <span className="ml-1 text-xs text-[var(--color-muted)]">({prevDiscussionStarter})</span>
+                    )}
+                  </span>
+                </label>
+              </section>
+            )}
+
             <button type="button" disabled={!canStart} onClick={startGame} className={`mt-7 ${primaryButtonClass}`}>
               Startuoti žaidimą
             </button>
@@ -332,6 +379,11 @@ function App() {
                     <p className="mt-3 text-4xl font-black leading-none text-[var(--color-danger)] sm:text-5xl">
                       IMPOSTORIUS
                     </p>
+                    {wordHints[selectedWord] && (
+                      <p className="mt-4 rounded-lg border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10 px-3 py-2 text-xs font-medium text-[var(--color-danger)] opacity-90">
+                        🕵️ Užuomina: {wordHints[selectedWord]}
+                      </p>
+                    )}
                   </>
                 ) : (
                   <>
