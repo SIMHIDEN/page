@@ -163,10 +163,10 @@ function App() {
           <div className={`${panelClass} p-5 sm:p-6`}>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] neon-text text-[var(--color-primary)]">
-                  // Imposter Party LT
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                  Imposter Party LT
                 </p>
-                <h1 className="mt-2 text-3xl font-black leading-tight tracking-tight">Paruošk raundą</h1>
+                <h1 className="mt-2 text-3xl font-bold leading-tight">Paruošk raundą</h1>
               </div>
               <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
                 {themeSwitchLabel}
@@ -302,7 +302,7 @@ function App() {
         <div className="mx-auto flex w-full max-w-md items-center px-4 py-8 sm:max-w-lg">
           <div className={`${panelClass} w-full p-5 text-center sm:p-7`}>
             <div className="flex items-start justify-between gap-3 text-left">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] neon-text text-[var(--color-primary)]">// Raundas baigtas</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Raundas baigtas</p>
               <button type="button" onClick={toggleTheme} className={secondaryButtonClass}>
                 {themeSwitchLabel}
               </button>
@@ -375,19 +375,19 @@ function App() {
               {isRevealVisible ? (
                 isImpostor ? (
                   <>
-                    <p className="text-xs font-bold uppercase tracking-[0.25em] danger-text text-[var(--color-danger)]">
-                      ⚠ IMPOSTOR
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-danger)]">
+                      IMPOSTOR
                     </p>
-                    <p className="mt-3 text-4xl font-black leading-none danger-text text-[var(--color-danger)] sm:text-5xl">
+                    <p className="mt-3 text-4xl font-black leading-none text-[var(--color-danger)] sm:text-5xl">
                       IMPOSTORIUS
                     </p>
                   </>
                 ) : (
                   <>
-                    <p className="text-xs font-bold uppercase tracking-[0.25em] neon-text text-[var(--color-primary)]">
-                      // Slaptas žodis
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)] opacity-80">
+                      Slaptas žodis
                     </p>
-                    <p className="mt-3 break-words text-4xl font-black leading-tight neon-text text-[var(--color-primary)] sm:text-5xl">{selectedWord}</p>
+                    <p className="mt-3 break-words text-4xl font-black leading-tight text-[var(--color-primary)] sm:text-5xl">{selectedWord}</p>
                   </>
                 )
               ) : (
